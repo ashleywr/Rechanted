@@ -145,7 +145,7 @@ public class RechantedCommonConfigs {
         public static final ModConfigSpec.IntValue RARITY_5_GRINDSTONE_XP_MAX;
         public static final ModConfigSpec.ConfigValue<List<? extends String>> RARITY_5_ENCHANTMENTS;
 
-        public static final ModConfigSpec.ConfigValue<? extends String> GRINDSTONE_RESULT_ITEM;
+        public static final ModConfigSpec.ConfigValue<String> GRINDSTONE_RESULT_ITEM;
         public static final ModConfigSpec.ConfigValue<List<? extends String>> COMMON_GEM_POOL;
         public static final ModConfigSpec.ConfigValue<List<? extends String>> RARE_GEM_POOL;
 
@@ -178,6 +178,10 @@ public class RechantedCommonConfigs {
 
         // Misc. settings
         public static final ModConfigSpec.ConfigValue<? extends Boolean> USE_GREYSCALE_GUI;
+        public static final ModConfigSpec.BooleanValue BOOK_MERGING_ENABLED;
+        public static final ModConfigSpec.IntValue BOOK_MERGE_COST_PER_LEVEL;
+        public static final ModConfigSpec.IntValue ORPHANED_BOOK_GRINDSTONE_XP;
+        public static final ModConfigSpec.DoubleValue GRINDSTONE_LAPIS_REFUND_CHANCE;
 
         static {
 
@@ -210,6 +214,7 @@ public class RechantedCommonConfigs {
                 RARITY_0_BOOK_BREAK_CHANCE = BUILDER.translation("config.rechanted.dusty.book_break_chance.title")
                         .defineInRange("book_break_chance", 0.0, 0.0, 1.0);
                 RARITY_0_FLOOR_BREAK_CHANCE = BUILDER.translation("config.rechanted.dusty.floor_break_chance.title")
+                        .comment("Chance per purchase to destroy one or more floor blocks; multiple blocks can break.")
                         .defineInRange("floor_break_chance", 0.05, 0.0, 1.0);
                 RARITY_0_REQUIRED_BOOKSHELVES = BUILDER
                         .translation("config.rechanted.dusty.required_bookshelves.title")
@@ -284,6 +289,7 @@ public class RechantedCommonConfigs {
                 RARITY_1_BOOK_BREAK_CHANCE = BUILDER.translation("config.rechanted.simple.book_break_chance.title")
                                .defineInRange("book_break_chance", 0.0, 0.0, 1.0);
                 RARITY_1_FLOOR_BREAK_CHANCE = BUILDER.translation("config.rechanted.simple.floor_break_chance.title")
+                               .comment("Chance per purchase to destroy one or more floor blocks; multiple blocks can break.")
                                .defineInRange("floor_break_chance", 0.05, 0.0, 1.0);
                 RARITY_1_REQUIRED_BOOKSHELVES = BUILDER
                                .translation("config.rechanted.simple.required_bookshelves.title")
@@ -356,6 +362,7 @@ public class RechantedCommonConfigs {
                 RARITY_2_BOOK_BREAK_CHANCE = BUILDER.translation("config.rechanted.unique.book_break_chance.title")
                                 .defineInRange("book_break_chance", 0.0, 0.0, 1.0);
                 RARITY_2_FLOOR_BREAK_CHANCE = BUILDER.translation("config.rechanted.unique.floor_break_chance.title")
+                                .comment("Chance per purchase to destroy one or more floor blocks; multiple blocks can break.")
                                 .defineInRange("floor_break_chance", 0.045, 0.0, 1.0);
                 RARITY_2_REQUIRED_BOOKSHELVES = BUILDER
                                 .translation("config.rechanted.unique.required_bookshelves.title")
@@ -419,6 +426,7 @@ public class RechantedCommonConfigs {
                 RARITY_3_BOOK_BREAK_CHANCE = BUILDER.translation("config.rechanted.elite.book_break_chance.title")
                                 .defineInRange("book_break_chance", 0.015, 0.0, 1.0);
                 RARITY_3_FLOOR_BREAK_CHANCE = BUILDER.translation("config.rechanted.elite.floor_break_chance.title")
+                                .comment("Chance per purchase to destroy one or more floor blocks; multiple blocks can break.")
                                 .defineInRange("floor_break_chance", 0.03, 0.0, 1.0);
                 RARITY_3_REQUIRED_BOOKSHELVES = BUILDER
                                 .translation("config.rechanted.elite.required_bookshelves.title")
@@ -486,6 +494,7 @@ public class RechantedCommonConfigs {
                                 .defineInRange("book_break_chance", 0.015, 0.0, 1.0);
                 RARITY_4_FLOOR_BREAK_CHANCE = BUILDER
                                 .translation("config.rechanted.ultimate.floor_break_chance.title")
+                                .comment("Chance per purchase to destroy one or more floor blocks; multiple blocks can break.")
                                 .defineInRange("floor_break_chance", 0.075, 0.0, 1.0);
                 RARITY_4_REQUIRED_BOOKSHELVES = BUILDER
                                 .translation("config.rechanted.ultimate.required_bookshelves.title")
@@ -553,6 +562,7 @@ public class RechantedCommonConfigs {
                                 .defineInRange("book_break_chance", 0.015, 0.0, 1.0);
                 RARITY_5_FLOOR_BREAK_CHANCE = BUILDER
                                 .translation("config.rechanted.legendary.floor_break_chance.title")
+                                .comment("Chance per purchase to destroy one or more floor blocks; multiple blocks can break.")
                                 .defineInRange("floor_break_chance", 0.09, 0.0, 1.0);
                 RARITY_5_REQUIRED_BOOKSHELVES = BUILDER
                                 .translation("config.rechanted.legendary.required_bookshelves.title")
@@ -597,6 +607,21 @@ public class RechantedCommonConfigs {
                                 .push("Configs for all rarities");
                 GRINDSTONE_RESULT_ITEM = BUILDER.translation("config.rechanted.grindstone_result_item.title")
                                 .define("grindstone_result_item", "minecraft:paper");
+                ORPHANED_BOOK_GRINDSTONE_XP = BUILDER
+                        .comment("XP refunded for a valid book whose enchantment is no longer in any rarity pool.")
+                        .defineInRange("orphaned_book_grindstone_xp", 2, 0, Integer.MAX_VALUE);
+                GRINDSTONE_LAPIS_REFUND_CHANCE = BUILDER
+                        .comment("Chance to recover one lapis when a rolled book is consumed by a grindstone.",
+                                "The lapis is returned in the vacated input slot, separately from the normal output.",
+                                "Previewing or reinserting a book never grants lapis. Set to 0 to disable.")
+                        .defineInRange("grindstone_lapis_refund_chance", 0.0, 0.0, 1.0);
+                BOOK_MERGING_ENABLED = BUILDER
+                        .comment("Allow two rolled books with the same enchantment and level to merge in an anvil.",
+                                "The output keeps the lower success rate and cannot exceed the enchantment or pool level cap.")
+                        .define("book_merging_enabled", false);
+                BOOK_MERGE_COST_PER_LEVEL = BUILDER
+                        .comment("Anvil XP levels charged per output enchantment level when merging books.")
+                        .defineInRange("book_merge_cost_per_level", 1, 1, 39);
                 BUILDER.comment("Global weighted pools used by bonus item rewards.",
                                 "Format: <gem-item-name>|<weight>");
                 ArrayList<String> common_gem_pool_defaults = new ArrayList<>();

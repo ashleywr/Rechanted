@@ -32,6 +32,7 @@ import net.tagtart.rechanted.util.AdvancementHelper;
 import net.tagtart.rechanted.util.BonusItemResolver;
 import net.tagtart.rechanted.util.BookRarityProperties;
 import net.tagtart.rechanted.util.EnchantmentPoolEntry;
+import net.tagtart.rechanted.util.FloorBlockConsumption;
 import net.tagtart.rechanted.util.UtilFunctions;
 
 import java.util.*;
@@ -109,40 +110,8 @@ public record PlayerPurchaseEnchantedBookC2SPayload(int bookPropertiesIndex, Blo
 
                 powerSources.consume(level, bookProperties.requiredBookShelves, bookProperties.bookBreakChance, random);
 
-                // Do same for floor blocks, with extra logic prevent the block under
-                // the table from breaking if possible.
-                HashSet<Integer> remainingBlocks = new HashSet<>();
-                BlockPos[] floorPositions = floorBlocks.getB();
-                for (int i = 0; i < floorPositions.length; ++i)
-                    remainingBlocks.add(i);
-
-                int underTableIndex = -1; // If still -1, don't offset the block under table's destruction to another block!
-                for (int i = 0; i < floorPositions.length; ++i) {
-                    BlockPos position = floorPositions[i];
-                    if (random.nextFloat() < bookProperties.floorBreakChance) {
-
-                        if (position.getX() == payload.enchantTablePos.getX() && position.getZ() == payload.enchantTablePos.getZ()) {
-                            underTableIndex = i;
-                        }
-                        else {
-                            level.destroyBlock(position, false);
-                        }
-                        remainingBlocks.remove(i);
-                    }
-                }
-
-                // This will be true if the center block (under the enchant table) was rolled to be destroyed.
-                // This should hopefully pick a random block that hasn't been destroyed. If all others were destroyed,
-                // then the center block itself DOES get destroyed since no other blocks remain.
-                if (underTableIndex != -1) {
-                    ArrayList<Integer> remainingBlocksIterable = new ArrayList<>(remainingBlocks);
-                    int randomBlock = underTableIndex;
-                    if (!remainingBlocksIterable.isEmpty())
-                        randomBlock = remainingBlocksIterable.get(random.nextInt(remainingBlocksIterable.size()));
-
-                    BlockPos position = floorPositions[randomBlock];
-                    level.destroyBlock(position, false);
-                }
+                FloorBlockConsumption.consume(level, payload.enchantTablePos, floorBlocks.getB(),
+                        bookProperties.floorBreakChance, random);
 
                 // Remove EXP and Lapis from player.
                 //player.giveExperiencePoints(-Math.min(player.totalExperience, bookProperties.requiredExp));

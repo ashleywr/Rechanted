@@ -59,6 +59,7 @@ import net.tagtart.rechanted.networking.data.TriggerRebirthItemEffectS2CPayload;
 import net.tagtart.rechanted.util.AdvancementHelper;
 import net.tagtart.rechanted.util.BookRarityProperties;
 import net.tagtart.rechanted.util.UtilFunctions;
+import net.tagtart.rechanted.util.RechantedBookOperations;
 
 import java.util.*;
 import java.util.List;
@@ -388,6 +389,22 @@ public class ModGenericEvents {
         ItemStack left = event.getLeft();
         ItemStack right = event.getRight();
 
+        if (!right.isEmpty() && (left.is(ModItems.RECHANTED_BOOK.get()) || right.is(ModItems.RECHANTED_BOOK.get()))) {
+            var merge = RechantedBookOperations.merge(left, right);
+            if (merge.isEmpty()) {
+                event.setCanceled(true);
+                return;
+            }
+            ItemStack output = merge.get().output();
+            if (event.getName() != null && !event.getName().isBlank()) {
+                output.set(DataComponents.CUSTOM_NAME, Component.literal(event.getName()));
+            }
+            event.setOutput(output);
+            event.setCost(merge.get().levelCost());
+            event.setMaterialCost(1);
+            return;
+        }
+
         // Turn off vanilla enchanted book from applying
         if (left.getItem() instanceof EnchantedBookItem || right.getItem() instanceof EnchantedBookItem) {
             event.setCanceled(true);
@@ -405,23 +422,48 @@ public class ModGenericEvents {
         boolean rechantedBookInBottomOnly = (!bottomSlot.isEmpty() && bottomSlot.is(ModItems.RECHANTED_BOOK.get())
                 && topSlot.isEmpty());
 
+        if ((topSlot.is(ModItems.RECHANTED_BOOK.get()) || bottomSlot.is(ModItems.RECHANTED_BOOK.get()))
+                && !rechantedBookInTopOnly && !rechantedBookInBottomOnly) {
+            event.setCanceled(true);
+            return;
+        }
+
         if (rechantedBookInTopOnly || rechantedBookInBottomOnly) {
 
             ItemStack currentStack = rechantedBookInTopOnly ? topSlot : bottomSlot;
 
-            ItemEnchantments enchantments = currentStack.get(DataComponents.STORED_ENCHANTMENTS);
-            Holder<Enchantment> enchantmentHolder = enchantments.entrySet().iterator().next().getKey();
-            String enchantmentRaw = enchantmentHolder.unwrapKey().orElseThrow().location().toString();
-            BookRarityProperties enchantRarityInfo = UtilFunctions.getPropertiesFromEnchantment(enchantmentRaw);
-
-            Random rand = new Random();
-            event.setXp(rand.nextInt(enchantRarityInfo.minGrindstoneXP, enchantRarityInfo.maxGrindstoneXP + 1));
-
-            ResourceLocation itemLocation = ResourceLocation
-                    .parse(RechantedCommonConfigs.GRINDSTONE_RESULT_ITEM.get());
-            event.setOutput(new ItemStack(BuiltInRegistries.ITEM.get(itemLocation)));
+            var book = RechantedBookOperations.readBook(currentStack);
+            if (book.isEmpty()) {
+                event.setCanceled(true);
+                return;
+            }
+            var range = RechantedBookOperations.salvageXp(book.get());
+            event.setXp((int) java.util.concurrent.ThreadLocalRandom.current().nextLong(range.min(), (long) range.max() + 1));
+            event.setOutput(RechantedBookOperations.salvageItem());
         }
 
+    }
+
+    @SubscribeEvent
+    public static void onGrindstoneTake(GrindstoneEvent.OnTakeItem event) {
+        boolean bookInTop = event.getBottomItem().isEmpty()
+                && RechantedBookOperations.readBook(event.getTopItem()).isPresent();
+        boolean bookInBottom = event.getTopItem().isEmpty()
+                && RechantedBookOperations.readBook(event.getBottomItem()).isPresent();
+        if (event.isCanceled() || (!bookInTop && !bookInBottom)
+                || (event.getPlayer() != null && event.getPlayer().level().isClientSide())) {
+            return;
+        }
+        if (java.util.concurrent.ThreadLocalRandom.current().nextDouble()
+                < RechantedCommonConfigs.GRINDSTONE_LAPIS_REFUND_CHANCE.get()) {
+            // Return a remainder only on consumption. Automation can collect it through
+            // the same NeoForge event contract, without a player or a Create dependency.
+            if (bookInTop) {
+                event.setNewTopItem(new ItemStack(Items.LAPIS_LAZULI));
+            } else {
+                event.setNewBottomItem(new ItemStack(Items.LAPIS_LAZULI));
+            }
+        }
     }
 
     @SubscribeEvent

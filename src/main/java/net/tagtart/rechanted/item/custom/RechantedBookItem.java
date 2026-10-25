@@ -81,7 +81,7 @@ public class RechantedBookItem extends Item {
         BookRarityProperties enchantRarityInfo = UtilFunctions.getPropertiesFromEnchantment(enchantmentRaw);
 
         if (enchantRarityInfo == null)
-            return Component.literal("Invalid enchantment!");
+            return Enchantment.getFullname(enchantmentHolder, enchantmentLevel).copy().withStyle(ChatFormatting.GRAY);
 
         String romanLevel = resolveEnchantmentLevelText(enchantment, enchantmentLevel);
         String enchantFormattedName = resolveEnchantmentDisplayName(enchantmentSource, enchantmentName);

@@ -1,0 +1,9 @@
+{
+  "values": [
+    "#minecraft:enchantable/chest_armor",
+    {
+      "id": "minecraft:elytra",
+      "required": false
+    }
+  ]
+}

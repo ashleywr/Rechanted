@@ -373,7 +373,7 @@ public class RechantedTableScreen extends AbstractContainerScreen<RechantedTable
         tooltipLines.add(Component.literal(" "));
 
         // Break chances:
-        String chancePerBlock = Component.translatable("tooltip.rechanted.enchantment_table.chance_per").getString();
+        String chancePerPurchase = Component.translatable("tooltip.rechanted.enchantment_table.chance_per_purchase").getString();
         Component breakChanceTitle = Component.translatable("tooltip.rechanted.enchantment_table.break_chance").append(":").withStyle(MID_GRAY_COLOR_STYLE);
         tooltipLines.add(breakChanceTitle);
 
@@ -394,7 +394,11 @@ public class RechantedTableScreen extends AbstractContainerScreen<RechantedTable
         if (properties.floorBreakChance > 0.0001f) {
             String floorBreakChance = String.format("%.1f%%", properties.floorBreakChance * 100f);
             tooltipLines.add(Component.literal("- " + floorTranslated + ":"));
-            tooltipLines.add(Component.literal("    - " + floorBreakChance + " " + chancePerBlock).withStyle(PINK_COLOR_STYLE));
+            tooltipLines.add(Component.literal("    - " + floorBreakChance + " " + chancePerPurchase).withStyle(PINK_COLOR_STYLE));
+            String warning = Component.translatable("tooltip.rechanted.enchantment_table.floor_break_warning").getString();
+            for (String line : UtilFunctions.wrapText(warning, 165)) {
+                tooltipLines.add(Component.literal(line.trim()).withStyle(MID_GRAY_COLOR_STYLE));
+            }
             tooltipLines.add(Component.literal(" "));
         }
 

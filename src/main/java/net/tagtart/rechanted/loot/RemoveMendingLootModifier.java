@@ -12,6 +12,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.common.loot.LootModifier;
 import net.tagtart.rechanted.config.RechantedCommonConfigs;
+import net.tagtart.rechanted.item.ModItems;
 
 public class RemoveMendingLootModifier extends LootModifier {
 
@@ -30,7 +31,8 @@ public class RemoveMendingLootModifier extends LootModifier {
 
         for (int i = 0; i < generatedLoot.size(); ++i) {
             ItemStack itemStack = generatedLoot.get(i);
-            if (itemStack.isEmpty()) {
+            // Books rolled from Rechanted's configured pools may intentionally contain Mending.
+            if (itemStack.isEmpty() || itemStack.is(ModItems.RECHANTED_BOOK.get())) {
                 continue;
             }
 

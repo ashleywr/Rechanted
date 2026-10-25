@@ -1,0 +1,10 @@
+{
+  "entries": [
+    "rechanted:replace_vanilla_enchanted_books",
+    "rechanted:fishing_nerf_loot",
+    "rechanted:replace_enchanted_loot",
+    "rechanted:remove_mending_loot",
+    "rechanted:add_dusty_mysterious_book_to_fishing"
+  ],
+  "replace": false
+}

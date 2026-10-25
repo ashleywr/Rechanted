@@ -91,3 +91,18 @@ config="mixins.rechanted.json"
 # stop your mod loading on the server for example.
 #[features.${mod_id}]
 #openGLVersion="[3.2,)"
+
+# Optional client integrations; neither viewer is required or bundled.
+[[dependencies.${mod_id}]]
+    modId="jei"
+    type="optional"
+    versionRange="[19.27.0.336,)"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.${mod_id}]]
+    modId="emi"
+    type="optional"
+    versionRange="[1.1.24,)"
+    ordering="AFTER"
+    side="CLIENT"

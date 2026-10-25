@@ -5,11 +5,15 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.registration.ISubtypeRegistration;
-import net.minecraft.core.component.DataComponents;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.tagtart.rechanted.Rechanted;
 import net.tagtart.rechanted.item.ModItems;
+import net.tagtart.rechanted.util.RechantedBookOperations;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,23 +27,48 @@ public class JEIRechantedPlugin implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
-        // Register item subtypes for JEI to distinguish by NBT for our books
+        // Enchantment and level identify a recipe; success rates and gem history do not.
         ISubtypeInterpreter<ItemStack> interpreter = new ISubtypeInterpreter<>() {
             @Override
             public @Nullable Object getSubtypeData(ItemStack itemStack, @NotNull UidContext context) {
 
-                if (itemStack.has(DataComponents.STORED_ENCHANTMENTS)) {
-                    return itemStack.get(DataComponents.STORED_ENCHANTMENTS).toString();
-                }
-
-                return null;
+                return RechantedBookOperations.recipeIdentity(itemStack);
             }
 
             @Override
             public @NotNull String getLegacyStringSubtypeInfo(@NotNull ItemStack ingredient, @NotNull UidContext context) {
-                return "";
+                return RechantedBookOperations.recipeIdentity(ingredient);
             }
         };
         registration.registerSubtypeInterpreter(ModItems.RECHANTED_BOOK.get(), interpreter);
+    }
+
+    @Override
+    public void registerCategories(IRecipeCategoryRegistration registration) {
+        for (var kind : BookOperation.Kind.values()) {
+            registration.addRecipeCategories(new JEIBookOperationCategory(kind, registration.getJeiHelpers().getGuiHelper()));
+        }
+    }
+
+    @Override
+    public void registerRecipes(IRecipeRegistration registration) {
+        var level = Minecraft.getInstance().level;
+        if (level == null) {
+            return;
+        }
+        var operations = BookOperationCatalog.create(level.registryAccess(), BookOperationCatalog.defaultEquipment());
+        for (var kind : BookOperation.Kind.values()) {
+            registration.addRecipes(JEIBookOperationCategory.type(kind),
+                    operations.stream().filter(operation -> operation.kind() == kind).toList());
+        }
+    }
+
+    @Override
+    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
+        for (var kind : BookOperation.Kind.values()) {
+            for (var workstation : BookOperationCatalog.workstations(kind)) {
+                registration.addRecipeCatalyst(workstation, JEIBookOperationCategory.type(kind));
+            }
+        }
     }
 }

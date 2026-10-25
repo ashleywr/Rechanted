@@ -1,0 +1,14 @@
+{
+  "values": [
+    "#c:tools",
+    "#minecraft:enchantable/weapon",
+    "#minecraft:enchantable/head_armor",
+    "#minecraft:enchantable/chest_armor",
+    "#minecraft:enchantable/leg_armor",
+    "#minecraft:enchantable/foot_armor",
+    {
+      "id": "minecraft:elytra",
+      "required": false
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -41,7 +42,6 @@ import oshi.util.tuples.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 public class RechantedTableBlockEntity extends EnchantingTableBlockEntity implements MenuProvider {
@@ -164,7 +164,7 @@ public class RechantedTableBlockEntity extends EnchantingTableBlockEntity implem
         pTag.putInt("CustomTableState", tableState.ordinal());
         pTag.putLong("CurrentStateTimeRemaining", currentStateTimeRemaining);
 
-        if (pendingBonusItem != ItemStack.EMPTY) {
+        if (!pendingBonusItem.isEmpty()) {
             pTag.put("PendingBonus", pendingBonusItem.save(registries));
         }
     }
@@ -177,11 +177,7 @@ public class RechantedTableBlockEntity extends EnchantingTableBlockEntity implem
         tableState = CustomRechantedTableState.values()[pTag.getInt("CustomTableState")];
         currentStateTimeRemaining = pTag.getLong("CurrentStateTimeRemaining");
 
-        Optional<ItemStack> loadedBonusItem = ItemStack.parse(registries, pTag.getCompound("PendingBonus"));
-        if (loadedBonusItem.isEmpty()) {
-            loadedBonusItem = ItemStack.parse(registries, pTag.getCompound("PendingGem"));
-        }
-        loadedBonusItem.ifPresent(itemStack -> pendingBonusItem = itemStack);
+        pendingBonusItem = readPendingBonus(pTag, registries);
     }
 
     @Override
@@ -191,11 +187,13 @@ public class RechantedTableBlockEntity extends EnchantingTableBlockEntity implem
         tableState = CustomRechantedTableState.values()[pTag.getInt("CustomTableState")];
         currentStateTimeRemaining = pTag.getLong("CurrentStateTimeRemaining");
 
-        Optional<ItemStack> loadedBonusItem = ItemStack.parse(lookupProvider, pTag.getCompound("PendingBonus"));
-        if (loadedBonusItem.isEmpty()) {
-            loadedBonusItem = ItemStack.parse(lookupProvider, pTag.getCompound("PendingGem"));
-        }
-        loadedBonusItem.ifPresent(itemStack -> pendingBonusItem = itemStack);
+        pendingBonusItem = readPendingBonus(pTag, lookupProvider);
+    }
+
+    private static ItemStack readPendingBonus(CompoundTag tag, HolderLookup.Provider registries) {
+        // An explicitly empty modern field clears the bonus, even if legacy data remains.
+        String key = tag.contains("PendingBonus", Tag.TAG_COMPOUND) ? "PendingBonus" : "PendingGem";
+        return ItemStack.parseOptional(registries, tag.getCompound(key));
     }
 
     @Override

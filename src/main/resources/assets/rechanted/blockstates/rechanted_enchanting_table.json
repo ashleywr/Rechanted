@@ -11,6 +11,12 @@
       "model": "rechanted:block/rechanted_enchanting_table",
       "y": 90
     },
+    "facing=up": {
+      "model": "rechanted:block/rechanted_enchanting_table"
+    },
+    "facing=down": {
+      "model": "rechanted:block/rechanted_enchanting_table"
+    },
     "facing=west": {
       "model": "rechanted:block/rechanted_enchanting_table",
       "y": 270

@@ -11,6 +11,12 @@
       "model": "rechanted:block/rechanted_trophy",
       "y": 90
     },
+    "facing=up": {
+      "model": "rechanted:block/rechanted_trophy"
+    },
+    "facing=down": {
+      "model": "rechanted:block/rechanted_trophy"
+    },
     "facing=west": {
       "model": "rechanted:block/rechanted_trophy",
       "y": 270
