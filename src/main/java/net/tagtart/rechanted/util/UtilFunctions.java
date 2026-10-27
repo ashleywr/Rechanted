@@ -35,8 +35,11 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.tagtart.rechanted.config.RechantedCommonConfigs;
 import net.tagtart.rechanted.event.ParticleEmitter;
@@ -324,9 +327,8 @@ public class UtilFunctions {
         return EnchantingPowerSources.meetsRequirement(enchantingPower, bookProperties.requiredBookShelves);
     }
 
-    // Note that is checks if the blocks match the required type for safety.
-    // Recommended to pass in smaller (possibly already filtered) arrays for performance.
     public static boolean playerMeetsFloorRequirement(BookRarityProperties bookProperties, BlockState[] states) {
+
         // Air should never count as a valid activation floor, even if configured accidentally.
         if (bookProperties.floorBlock == Blocks.AIR) {
             return false;

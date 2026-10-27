@@ -117,7 +117,7 @@ diagnostics. Empty bonuses are omitted when saving.
 
 This is an unofficial maintenance fork. Original authors retain ownership and credit. See the [upstream project](https://github.com/Rechanted-Team/Rechanted) for the original mod. Local changes do not imply upstream endorsement.
 
-Licensing: **MIT (as declared in the original source snapshot)**. Existing license files, copyright notices, attribution and any separate asset terms remain in force. This fork does not relicense upstream work.
+Licensing: **GPL-3.0-only for the current integrated source**. The earlier MIT snapshot notice, original copyright notices, attribution and any separate asset terms are retained.
 
 Provided **AS IS**, without warranty of any kind. Maintenance, updates and support are best effort; compatibility with every modpack is not guaranteed.
 
@@ -138,3 +138,9 @@ Use Java 21 and the checked-in Gradle wrapper:
 Build outputs are under `build/libs/` or each loader subproject's `build/libs/`. Some projects require the local development dependencies described above; those dependencies are not included in the download.
 
 For a problem report, include the exact release filename, Minecraft and loader versions, relevant mod versions, `logs/latest.log`, and a crash report if one was written. Remove private information before sharing logs. Remove the JAR to uninstall; worlds containing this mod's blocks, entities or world generation may require restoring a backup.
+
+## October 2026 upstream integration
+
+This fork now includes upstream configurable tooltip icons and chiseled bookshelf state synchronization. Enchanting power continues to use NeoForge providers, including modded and datapack providers, with the existing consumption rules. The upstream block whitelist is intentionally not substituted for provider support.
+
+Newly imported upstream code is GPL-3.0-only; corresponding source is published with each GitHub release. The MIT notice for the earlier source snapshot is retained in LICENSE-MIT-SNAPSHOT.
