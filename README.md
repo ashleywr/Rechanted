@@ -1,5 +1,7 @@
 # Rechanted
 
+Please start with [the original Rechanted project](https://github.com/Rechanted-Team/Rechanted) for official downloads, news and support. This is my unofficial compatibility fork; the changes documented below are my experiments and are not upstream features.
+
 ## Enchanting power providers
 
 The Rechanted table uses NeoForge's `BlockState.getEnchantPowerBonus(level, pos)`
@@ -113,7 +115,7 @@ diagnostics. Empty bonuses are omitted when saving.
 
 <!-- ashley-release-information -->
 
-## Ashley's builds
+## My builds
 
 This is an unofficial maintenance fork. Original authors retain ownership and credit. See the [upstream project](https://github.com/Rechanted-Team/Rechanted) for the original mod. Local changes do not imply upstream endorsement.
 
